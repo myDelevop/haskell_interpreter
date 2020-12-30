@@ -19,8 +19,7 @@ parse (P p) env inp = p env inp
 item :: Parser Char
 item = P (\env inp -> case inp of
     [] -> []
-    (x:xs) -> [(env,x,xs)]
-)
+    (x:xs) -> [(env,x,xs)])
 
 sat :: (Char -> Bool) -> Parser Char
 sat p = do {
@@ -201,7 +200,6 @@ aterm = do {
     <|>
     afactor
 
-
 afactor :: Parser Int
 afactor = (do 
     symbol "("
@@ -215,6 +213,59 @@ afactor = (do
     <|>
     integer
 
+
+bexp :: Parser Bool
+bexp = (do
+    b0 <- bterm
+    symbol "OR"
+    b1 <- bexp
+    return (b0 || b1))
+    <|>
+    bterm
+
+bterm :: Parser Bool
+bterm = (do 
+    f0 <- bfactor
+    symbol "AND"
+    f1 <- bterm
+    return (f0 && f1)
+    <|>
+    bfactor)
+
+bfactor :: Parser Bool
+bfactor = (do
+        symbol "True"
+        return True)
+        <|>
+        (do
+        symbol "False"
+        return False)
+        <|>
+        (do
+        symbol "!"
+        b <- bfactor
+        return (not b))
+        <|>
+        (do 
+            symbol "("
+            b <- bexp
+            symbol ")"
+            return b)
+        <|>
+        bcomparison
+
+bcomparison :: Parser Bool
+bcomparison = (do 
+    a0 <- aexp
+    symbol "="
+    a1 <- aexp
+    return (a0 == a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol "<="
+        a1 <- aexp
+        return (a0 <= a1))
 
 
 main = do 

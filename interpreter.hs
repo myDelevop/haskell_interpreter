@@ -190,15 +190,47 @@ aexp = (do
     <|>
     aterm
 
+parseAexp :: Parser String
+parseAexp = 
+    do {
+        t <- parseAterm;
+        do {
+            symbol "+";
+            e <- parseAexp;
+            return (t ++ "+" ++ e);
+        }
+        <|>
+        do {
+            symbol "-";
+            e <- parseAexp;
+            return (t ++ "-" ++ e);
+        }
+    }
+
 aterm :: Parser Int
 aterm = do {
-    f <- afactor
-    ; symbol "*"
-    ; t <- aterm
-    ; return (t * f)
+    f <- afactor;
+    symbol "*";
+    t <- aterm;
+    return (t * f);
     }
     <|>
     afactor
+
+parseAterm :: Parser String
+parseAterm = do {
+    f <- parseFactor;
+    do {
+        symbol "*";
+        t <- parseAterm;
+        return(f ++ "*" ++ t);
+    } <|> do {
+        symbol "/";
+        t <- parseAterm;
+        return(f ++ "/" ++ t);
+    } <|>
+    return f;
+}
 
 afactor :: Parser Int
 afactor = (do 
@@ -213,6 +245,49 @@ afactor = (do
     <|>
     integer
 
+parseFactor :: Parser String
+parseFactor = 
+    do {
+        symbol "(";
+        e <- parseAexp;
+        symbol ")";
+        return ("(" ++ e ++ ")")
+    } <|> do {
+        symbol "-";
+        f <- parseFactor;
+        return("-" ++ f);
+    } <|> do {
+        i <- identifier;
+        return i;
+    } <|> do {
+        i <- integer;
+        return (show i);
+    }
+
+
+parseCompareTo :: Parser String
+parseCompareTo = do {
+    a1 <- parseAexp;
+    symbol "<";
+    a2 <- parseAexp;
+    return (a1 ++ "<" ++ a2);
+    }
+    <|> do {
+        a1 <- parseAexp;
+        symbol ">";
+        a2 <- parseAexp;
+        return (a1 ++ ">" ++ a2);
+    } <|> do {
+        a1 <- parseAexp;
+        symbol "==";
+        a2 <- parseAexp;
+        return (a1 ++ "==" ++ a2);
+    } <|> do {
+        a1 <- parseAexp;
+        symbol "!=";
+        a2 <- parseAexp;
+        return (a1 ++ "!=" ++ a2);
+    }
 
 bexp :: Parser Bool
 bexp = (do
@@ -222,6 +297,88 @@ bexp = (do
     return (b0 || b1))
     <|>
     bterm
+
+parseBexp :: Parser String
+parseBexp = do {
+    p1 <- parseBexp2;
+    symbol "||";
+    p2 <- parseBexp;
+    return (p1 ++ "||" ++ p2);
+    } <|> do {
+        p <- parseBexp2;
+        return p;
+    }
+
+parseBexp2 :: Parser String
+parseBexp2 = 
+    do {
+        p1 <- parseBexp3;
+        symbol "&&";
+        p2 <- parseBexp2;
+        return (p1 ++ "&&" ++ p2);
+    }
+    <|>
+    do {
+        c <- parseCompareTo;
+        return c;
+    }
+    <|>
+    do {
+        symbol "True";
+        return "True";
+    }
+    <|>
+    do {
+        symbol "False";
+        return "False";
+    }
+    <|>
+    do {
+        i <- identifier;
+        return i;
+    }
+    <|>
+    do {
+        symbol "!";
+        p <- parseBexp3;
+        return ("!" ++ p)
+    }
+
+parseBexp3 :: Parser String
+parseBexp3 =
+    do {
+        symbol "(";
+        p <- parseBexp;
+        symbol ")";
+        return ("(" ++ p ++ ")");
+    }
+    <|>
+    do {
+        c <- parseCompareTo;
+        return c;
+    }
+    <|>
+    do {
+        symbol "True";
+        return "True";
+    }
+    <|>
+    do {
+        symbol "False";
+        return "False";
+    }
+    <|>
+    do {
+        i <- identifier;
+        return i;
+    }
+    <|>
+    do {
+        symbol "!";
+        p <- parseBexp3;
+        return ("!" ++ p)
+    }
+
 
 bterm :: Parser Bool
 bterm = (do 
@@ -268,6 +425,67 @@ bcomparison = (do
         return (a0 <= a1))
 
 
+assignment :: Parser String
+assignment = do 
+    x <- identifier
+    symbol ":="
+    v <- aexp
+    symbol ";"
+    updateEnv Variable{name = x, vtype = "", value = v}
+
+parseAssignment :: Parser String
+parseAssignment = 
+    do {
+        i <- identifier;
+        symbol "=";
+        do {
+            a <- parseAexp;
+            symbol ";";
+            return (i ++ "=" ++ a ++ ";")
+        }
+    <|>
+    do {
+        b <- parseBexp;
+        symbol ";";
+        return (i ++ "=" ++ b ++ ";");
+    }
+}
+
+
+command :: Parser String
+command = assignment
+    <|>
+    ifThenElse
+    <|>
+    while
+    <|>
+    (do
+        symbol "skip"
+        symbol ";")
+
+parseCommand :: Parser String
+parseCommand = 
+    do {
+        a <- parseAssignment;
+        return a;
+    }
+    <|>
+    do {
+        s <- parseSkip;
+        return s;
+    }
+    <|>
+    do {
+        i <- parseIfThenElse;
+        return i;
+    }
+    <|>
+    do {
+        w <- parseWhile;
+        return w;
+    }
+    
+
 program :: Parser String
 program = (do 
     command
@@ -285,25 +503,20 @@ parseProgram = do {
     return c;
 }
 
+skip :: Parser String
+skip = do {
+    symbol "skip";
+    symbol ";";
+    parseCommand;
+}
 
-command :: Parser String
-command = assignment
-    <|>
-    ifThenElse
-    -- <|>
-    -- while
-    <|>
-    (do
-        symbol "skip"
-        symbol ";")
-
-assignment :: Parser String
-assignment = do 
-    x <- identifier
-    symbol ":="
-    v <- aexp
-    symbol ";"
-    updateEnv Variable{name = x, vtype = "", value = v}
+parseSkip :: Parser String
+parseSkip = do {
+    symbol "skip";
+    symbol ";";
+    c <- parseCommand;
+    return ("skip;" ++ c)
+}
 
 
 ifThenElse :: Parser String
@@ -336,9 +549,79 @@ ifThenElse = (do
             <|>
             return "")
         )
-        
+
+parseIfThenElse :: Parser String
+parseIfThenElse = do {
+    symbol "if";
+    symbol "(";
+    b <- parseBexp;
+    symbol ")";
+    symbol "{";
+    p1 <- parseProgram;
+    symbol "}";
+    do {
+        symbol "else";
+        symbol "}";
+        p2 <- parseProgram;
+        symbol "}";
+        return ("if(" ++ b ++ "){" ++ p1 ++ "}else{" ++ p2 ++ "}")
+    }
+    <|>
+    return ("if(" ++ b ++ "){" ++ p1 ++ "}");
+}        
 
 
+while :: Parser String
+while = do 
+    w <- consumeWhile
+    repeatWhile w
+    symbol "while"
+    -- symbol "("
+    b <- bexp
+    -- symbol ")"
+    symbol "{"
+    if (b) then (
+        do
+            program
+            symbol "}"
+            repeatWhile w
+            while)
+    else (
+        do
+            parseProgram
+            symbol "}"
+            return "")
+
+parseWhile :: Parser String
+parseWhile = do {
+    symbol "while";
+    symbol "(";
+    b <- parseBexp;
+    symbol ")";
+    symbol "{";
+    p <- parseProgram;
+    symbol "}";
+    return ("while(" ++ b ++ "){" ++ p ++ "}");
+}
+
+repeatWhile :: String -> Parser String
+repeatWhile c = P(\env input -> [(env, "", c ++ input)])
+
+
+consumeWhile :: Parser String
+consumeWhile = do 
+    symbol "while"
+    b <- consumeBexp
+    symbol "{"
+    p <- parseProgram
+    symbol "}"
+    return ("while " ++ b ++ " {" ++ p ++ "}")
+
+
+-- ROCL TODOOO
+consumeBexp :: Parser String
+consumeBexp = do
+    return "sd"
 
 main = do 
     print("hello")

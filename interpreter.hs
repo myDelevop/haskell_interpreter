@@ -268,5 +268,77 @@ bcomparison = (do
         return (a0 <= a1))
 
 
+program :: Parser String
+program = (do 
+    command
+    program)
+    <|>
+    command
+
+parseProgram :: Parser String
+parseProgram = do {
+    c <- parseCommand;
+    p <- parseProgram;
+    return (c ++ p);
+} <|> do {
+    c <- parseCommand;
+    return c;
+}
+
+
+command :: Parser String
+command = assignment
+    <|>
+    ifThenElse
+    -- <|>
+    -- while
+    <|>
+    (do
+        symbol "skip"
+        symbol ";")
+
+assignment :: Parser String
+assignment = do 
+    x <- identifier
+    symbol ":="
+    v <- aexp
+    symbol ";"
+    updateEnv Variable{name = x, vtype = "", value = v}
+
+
+ifThenElse :: Parser String
+ifThenElse = (do
+    symbol "if"
+    b <- bexp
+    symbol "{"
+    if (b) then
+        (do
+            program
+            symbol "}"
+            (do 
+                symbol "else"
+                symbol "{"
+                parseProgram;
+                symbol "}"
+                return "")
+            <|>
+            (return ""))
+    else
+        (do
+            parseProgram
+            symbol "}"
+            (do
+                symbol "else"
+                symbol "{"
+                program
+                symbol "}"
+                return "")
+            <|>
+            return "")
+        )
+        
+
+
+
 main = do 
     print("hello")

@@ -65,5 +65,10 @@ instance Monad Parser where
         [] -> []
         [(env, v, out)] -> parse(f v) env out)
 
+
+empty <|> x = x
+x <|> empty = x
+x <|> (y <|> z) = (x <|> y) <|> z
+
 main = do 
     print("hello")

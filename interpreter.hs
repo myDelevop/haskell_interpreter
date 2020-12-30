@@ -13,47 +13,37 @@ type Env = [Variable]
 
 newtype Parser a = P (Env -> String -> [(Env, a, String)])
 
-parse :: Parser a -> Env -> String -> [(Env,a,String)]
+parse :: Parser a -> Env -> String -> [(Env, a, String)]
 parse (P p) env inp = p env inp
 
+item :: Parser Char
+item = P (\env inp -> case inp of
+    [] -> []
+    (x:xs) -> [(env,x,xs)]
+)
+
+sat :: (Char -> Bool) -> Parser Char
+sat p = do {
+    x <- item;
+    if p x then return x else empty;
+ }
+
+space :: Parser ()
+space = do {
+    many(sat isSpace);
+    return ();
+}
+
+token :: Parser a -> Parser a
+token p = do {
+    space;
+    v <- p;
+    space;
+    return v;
+}
 
 symbol :: String -> Parser String
 symbol xs = token (string xs)
-
-
-identifier :: Parser String
-identifier = token ident
-
-natural :: Parser Int
-natural = token nat
-
-integer :: Parser Int
-integer = token int
-
-
-char :: Char -> Parser Char
-char x = sat (== x)
-
-digit :: Parser Char
-digit = sat isDigit
-
-ident :: Parser String
-ident = 
- do {
-  x <- lower;
-  xs <- many alphanum;
-  return (x:xs);
- }
-
-
-string :: String -> Parser String
-string [] = return []
-string (x:xs) = 
- do {
-  char x;
-  string xs;
-  return (x:xs);
-}
 
 lower :: Parser Char
 lower = sat isLower
@@ -67,13 +57,48 @@ letter = sat isAlpha
 alphanum :: Parser Char
 alphanum = sat isAlphaNum
 
+ident :: Parser String
+ident = 
+ do {
+  x <- lower;
+  xs <- many alphanum;
+  return (x:xs);
+ }
+
+identifier :: Parser String
+identifier = token ident
+
+natural :: Parser Int
+natural = token nat
+
+integer :: Parser Int
+integer = token int
+
+
+
+digit :: Parser Char
+digit = sat isDigit
+
 
 nat :: Parser Int
-nat = 
+nat = do {
+    xs <- some digit;
+    return (read xs);
+}
+
+char :: Char -> Parser Char
+char x = sat (== x)
+
+string :: String -> Parser String
+string [] = return []
+string (x:xs) = 
  do {
-  xs <- some digit;
-  return (read xs);
- }
+  char x;
+  string xs;
+  return (x:xs);
+}
+
+
 int :: Parser Int
 int = 
  do {
@@ -83,35 +108,6 @@ int =
  }
  <|>
  nat;
-
-token :: Parser a -> Parser a
-token p = 
- do {
-  space;
-  v <- p;
-  space;
-  return v;
- }
-
-
-space :: Parser ()
-space = 
- do {
-  many (sat isSpace);
-  return ();
-}
-
-item :: Parser Char
-item = P (\env inp -> case inp of 
- [] -> []
- (x:xs) -> [(env,x,xs)])
-
-sat :: (Char -> Bool) -> Parser Char
-sat p = 
- do {
- x <- item;
- if p x then return x else empty;
- }
 
 
 -- Update the environment with a variable
@@ -218,6 +214,8 @@ afactor = (do
     readVariable i)
     <|>
     integer
+
+
 
 main = do 
     print("hello")

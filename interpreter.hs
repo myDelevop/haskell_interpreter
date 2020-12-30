@@ -1,4 +1,7 @@
 import Control.Applicative 
+import Data.Char
+import System.IO
+
 
 data Variable = Variable {
     name :: String,
@@ -12,6 +15,103 @@ newtype Parser a = P (Env -> String -> [(Env, a, String)])
 
 parse :: Parser a -> Env -> String -> [(Env,a,String)]
 parse (P p) env inp = p env inp
+
+
+symbol :: String -> Parser String
+symbol xs = token (string xs)
+
+
+identifier :: Parser String
+identifier = token ident
+
+natural :: Parser Int
+natural = token nat
+
+integer :: Parser Int
+integer = token int
+
+
+char :: Char -> Parser Char
+char x = sat (== x)
+
+digit :: Parser Char
+digit = sat isDigit
+
+ident :: Parser String
+ident = 
+ do {
+  x <- lower;
+  xs <- many alphanum;
+  return (x:xs);
+ }
+
+
+string :: String -> Parser String
+string [] = return []
+string (x:xs) = 
+ do {
+  char x;
+  string xs;
+  return (x:xs);
+}
+
+lower :: Parser Char
+lower = sat isLower
+
+upper :: Parser Char
+upper = sat isUpper
+
+letter :: Parser Char
+letter = sat isAlpha
+
+alphanum :: Parser Char
+alphanum = sat isAlphaNum
+
+
+nat :: Parser Int
+nat = 
+ do {
+  xs <- some digit;
+  return (read xs);
+ }
+int :: Parser Int
+int = 
+ do {
+  char '-';
+  n <- nat;
+  return (-n);
+ }
+ <|>
+ nat;
+
+token :: Parser a -> Parser a
+token p = 
+ do {
+  space;
+  v <- p;
+  space;
+  return v;
+ }
+
+
+space :: Parser ()
+space = 
+ do {
+  many (sat isSpace);
+  return ();
+}
+
+item :: Parser Char
+item = P (\env inp -> case inp of 
+ [] -> []
+ (x:xs) -> [(env,x,xs)])
+
+sat :: (Char -> Bool) -> Parser Char
+sat p = 
+ do {
+ x <- item;
+ if p x then return x else empty;
+ }
 
 
 -- Update the environment with a variable
@@ -65,10 +165,59 @@ instance Monad Parser where
         [] -> []
         [(env, v, out)] -> parse(f v) env out)
 
-
+{-
 empty <|> x = x
 x <|> empty = x
 x <|> (y <|> z) = (x <|> y) <|> z
+-}
+
+instance Alternative Parser where
+    -- empty :: Parser a
+    empty = P (\env input -> [])
+    -- (<|>) :: Parser a -> Parser a -> Parser a
+    p <|> q = P (\env input -> case parse p env input of 
+        [] -> parse q env input
+        [(env, v, out)] -> [(env, v, out)])
+
+
+aexp :: Parser Int
+aexp = (do 
+    t <- aterm
+    symbol "+"
+    a <- aexp
+    return (t+1))
+    <|>
+    (do 
+    t <- aterm
+    symbol "-"
+    a <- aexp
+    return (t-a))
+    <|>
+    aterm
+
+aterm :: Parser Int
+aterm = do {
+    f <- afactor
+    ; symbol "*"
+    ; t <- aterm
+    ; return (t * f)
+    }
+    <|>
+    afactor
+
+
+afactor :: Parser Int
+afactor = (do 
+    symbol "("
+    a <- aexp
+    symbol ")"
+    return a)
+    <|>
+    (do 
+    i <- identifier
+    readVariable i)
+    <|>
+    integer
 
 main = do 
     print("hello")

@@ -301,6 +301,50 @@ bexp = (do
     <|>
     bterm
 
+bterm :: Parser Bool
+bterm = (do 
+    f0 <- bfactor
+    symbol "AND"
+    f1 <- bterm
+    return (f0 && f1)
+    <|>
+    bfactor)
+
+bfactor :: Parser Bool
+bfactor = (do
+        symbol "True"
+        return True)
+        <|>
+        (do
+        symbol "False"
+        return False)
+        <|>
+        (do
+        symbol "!"
+        b <- bfactor
+        return (not b))
+        <|>
+        (do 
+            symbol "("
+            b <- bexp
+            symbol ")"
+            return b)
+        <|>
+        bcomparison
+
+bcomparison :: Parser Bool
+bcomparison = (do 
+    a0 <- aexp
+    symbol "="
+    a1 <- aexp
+    return (a0 == a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol "<="
+        a1 <- aexp
+        return (a0 <= a1))
+
 parseBexp :: Parser String
 parseBexp = do {
     p1 <- parseBexp2;
@@ -381,52 +425,6 @@ parseBexp3 =
         p <- parseBexp3;
         return ("!" ++ p)
     }
-
-
-bterm :: Parser Bool
-bterm = (do 
-    f0 <- bfactor
-    symbol "AND"
-    f1 <- bterm
-    return (f0 && f1)
-    <|>
-    bfactor)
-
-bfactor :: Parser Bool
-bfactor = (do
-        symbol "True"
-        return True)
-        <|>
-        (do
-        symbol "False"
-        return False)
-        <|>
-        (do
-        symbol "!"
-        b <- bfactor
-        return (not b))
-        <|>
-        (do 
-            symbol "("
-            b <- bexp
-            symbol ")"
-            return b)
-        <|>
-        bcomparison
-
-bcomparison :: Parser Bool
-bcomparison = (do 
-    a0 <- aexp
-    symbol "="
-    a1 <- aexp
-    return (a0 == a1))
-    <|>
-    (do 
-        a0 <- aexp
-        symbol "<="
-        a1 <- aexp
-        return (a0 <= a1))
-
 
 assignment :: Parser String
 assignment = do 
@@ -627,4 +625,4 @@ consumeBexp = do
     return "sd"
 
 main = do 
-    print(parse program [] "if(3>2) {c:=1;}")
+    print(parse program [] "if(True OR False) {c:=1;}")

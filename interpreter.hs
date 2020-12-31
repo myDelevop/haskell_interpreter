@@ -180,7 +180,7 @@ aexp = (do
     t <- aterm
     symbol "+"
     a <- aexp
-    return (t+1))
+    return (t+a))
     <|>
     (do 
     t <- aterm
@@ -444,13 +444,13 @@ parseAssignment =
         do {
             a <- parseAexp;
             symbol ";";
-            return (i ++ "=" ++ a ++ ";")
+            return (i ++ ":=" ++ a ++ ";")
         }
     <|>
     do {
         b <- parseBexp;
         symbol ";";
-        return (i ++ "=" ++ b ++ ";");
+        return (i ++ ":=" ++ b ++ ";");
     }
 }
 
@@ -571,7 +571,7 @@ parseIfThenElse = do {
     }
     <|>
     return ("if(" ++ b ++ "){" ++ p1 ++ "}");
-}        
+}
 
 
 while :: Parser String
@@ -627,7 +627,4 @@ consumeBexp = do
     return "sd"
 
 main = do 
-    print(parse parseProgram [] "i:=0;")
-
-
-
+    print(parse program [] "if(3>2) {c:=1;}")

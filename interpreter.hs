@@ -625,4 +625,4 @@ consumeBexp = do
     return "sd"
 
 main = do 
-    print(parse program [] "if(True OR False) {c:=1;}")
+    print(parse program [] "if(3 > 5) {c:=1+34;}")

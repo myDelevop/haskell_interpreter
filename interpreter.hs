@@ -205,6 +205,9 @@ parseAexp =
             e <- parseAexp;
             return (t ++ "-" ++ e);
         }
+    } <|> do {
+        t <- parseAterm;
+        return t;
     }
 
 aterm :: Parser Int
@@ -437,7 +440,7 @@ parseAssignment :: Parser String
 parseAssignment = 
     do {
         i <- identifier;
-        symbol "=";
+        symbol ":=";
         do {
             a <- parseAexp;
             symbol ";";
@@ -624,4 +627,7 @@ consumeBexp = do
     return "sd"
 
 main = do 
-    print("hello")
+    print(parse parseProgram [] "i:=0;")
+
+
+

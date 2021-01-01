@@ -598,13 +598,13 @@ while = do
 parseWhile :: Parser String
 parseWhile = do {
     symbol "while";
-    symbol "(";
+    --symbol "(";
     b <- parseBexp;
-    symbol ")";
+    --symbol ")";
     symbol "{";
     p <- parseProgram;
     symbol "}";
-    return ("while(" ++ b ++ "){" ++ p ++ "}");
+    return ("while" ++ b ++ "){" ++ p ++ "}");
 }
 
 repeatWhile :: String -> Parser String
@@ -627,4 +627,4 @@ consumeBexp = do
     return "sd"
 
 main = do 
-    print(parse program [] "if(3 > 5) {c:=1+34;}")
+    print(parse program [] "a:=3;b:=4; while a<=b {a:=a+1;}")

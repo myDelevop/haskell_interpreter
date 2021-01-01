@@ -343,7 +343,7 @@ bcomparison = (do
         a0 <- aexp
         symbol "<"
         a1 <- aexp
-        return (a0 <= a1))
+        return (a0 < a1))
 
 parseBexp :: Parser String
 parseBexp = do {
@@ -603,7 +603,7 @@ parseWhile = do {
     symbol "{";
     p <- parseProgram;
     symbol "}";
-    return ("while" ++ b ++ "){" ++ p ++ "}");
+    return ("while" ++ b ++ "{" ++ p ++ "}");
 }
 
 repeatWhile :: String -> Parser String
@@ -619,12 +619,14 @@ consumeWhile = do
     symbol "}"
     return ("while " ++ b ++ " {" ++ p ++ "}")
 
--- ROCL TODOOO
 consumeBexp :: Parser String
 consumeBexp = do
-    symbol "a<b"
-    return "a<b"
+    b <- parseBexp
+    return b
 
 main = do 
-    print(parse program [] "a:=3;b:=4; while a<b {a:=a+1;}")
-    --print(parse parseProgram [] "a:=a+1;")
+    print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
+    --print(parse program [] "i := 0; while i<10 {out:=0+i; i:=i+1;}")
+
+--i = 10
+--out = 9

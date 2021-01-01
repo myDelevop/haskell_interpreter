@@ -523,7 +523,9 @@ parseSkip = do {
 ifThenElse :: Parser String
 ifThenElse = (do
     symbol "if"
+    symbol "("
     b <- bexp
+    symbol ")"
     symbol "{"
     if (b) then
         (do

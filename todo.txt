@@ -1,10 +1,9 @@
 COSE FATTE:
 - Estendere l'interprete con la BNF modificata
 - Non funziona l'assegnazione b:=False; (viene parsarizzato ma non viene calcolato)
-
+- Non funziona il while con la condizione OR (i<n OR 3==9) 
 
 COSE CHE RIMANGONO DA FARE:
 - Inserire la gestione dei tipi di dato (mai valorizzati, vedere quando viene chiamato updateEnv)
 - Aggiungere il ciclo for
 - Aggiungere la gestione degli array
-- Non funziona il while con la condizione OR (i<n OR 3==9) 

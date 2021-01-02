@@ -624,9 +624,39 @@ consumeBexp = do
     b <- parseBexp
     return b
 
---main = do 
-    --print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
-    --print(parse program [] "i := 0; while i<10 {out:=0+i; i:=i+1;}")
+-- Extracts the GML code (it is "a" type) from tuple
+getCode :: [(Env, a, String)] -> a
+getCode [(_, x, _)]  =  x
+
+booleanType = "Boolean"
+integerType = "Integer"
+
+getVarType :: Variable -> String
+getVarType = vtype
+
+getVarName :: Variable -> String
+getVarName = name
+
+getVarValue :: Variable -> Int
+getVarValue = value
+
+
+-- Extracts the Environment from the tuple and converts in a String form to print it
+getMemory :: [(Env, a, String)] -> String
+getMemory [] = " Invalid input\n"
+getMemory [(x:xs, parsedString, "")] = case Main.getVarType x of
+    "Boolean" -> case Main.getVarValue x of
+        1 -> "Boolean: " ++ (Main.getVarName x) ++ " = True\n" ++ (getMemory [(xs,parsedString,"")])
+        otherwise -> "Boolean: " ++ (Main.getVarName x) ++ " = False\n" ++ (getMemory [(xs,parsedString,"")])
+    "Integer" -> " Integer: " ++ (Main.getVarName x) ++ " = " ++ (show (Main.getVarValue x)) ++ "\n" ++ (getMemory[(xs,parsedString,"")])
+    "" -> "Emplty data type but we have following values: " ++ (Main.getVarName x) ++ " = " ++ (show (Main.getVarValue x)) ++ "\n" ++ (getMemory[(xs,parsedString,"")])
+
+getMemory [(env, parsedString, notParsedString)] = case notParsedString of
+    "" -> ""
+    otherwise -> " Error (unused input '" ++ notParsedString ++ "')\n" ++ getMemory [(env,parsedString, "")]
+
+
+
 
 parser :: String -> IO String
 parser xs = 
@@ -638,7 +668,16 @@ parser xs =
         case line of
             "printmem" ->
                 do
-                    putStrLn "TODO print memory"
+                    putStrLn  ""
+                    putStrLn  " -+-+ Parsed code -+-+ "
+                    if xs == [] then
+                        putStrLn "111"
+                    else 
+                        putStrLn (getCode (parse parseProgram [] xs))
+                    putStrLn ""
+                    putStrLn "-+-+ Memory -+-+"
+                    putStrLn (getMemory (parse program [] xs))
+                    putStrLn ""
                     parser(xs)
             "syntax" ->
                 do
@@ -737,4 +776,8 @@ rcint = do
     putStrLn ""
     parser []
 
-main = rcint
+main = do
+    --print(getMemory (parse program [] "a:=3;"))
+    rcint
+    --print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
+    --print(parse program [] "b:=False;")

@@ -509,6 +509,8 @@ command = assignment
     <|>
     while
     <|>
+    forLoop
+    <|>
     (do
         symbol "skip"
         symbol ";")
@@ -533,6 +535,11 @@ parseCommand =
     do {
         w <- parseWhile;
         return w;
+    }
+    <|>
+    do {
+        f <- parseForLoop;
+        return f;
     }
     
 
@@ -623,6 +630,14 @@ parseIfThenElse = do {
 }
 
 
+forLoop :: Parser String
+forLoop = do
+    f <- parseForLoop
+    repeatWhile f
+    program
+    return ""
+
+
 while :: Parser String
 while = do 
     w <- consumeWhile
@@ -676,6 +691,25 @@ consumeBexp :: Parser String
 consumeBexp = do
     b <- parseBexp
     return b
+
+
+parseForLoop :: Parser String
+parseForLoop = do {
+    symbol "for";
+    symbol "(";
+    a <- parseAssignment;
+    b <- parseBexp;
+    symbol ";";
+    x <- identifier;
+    symbol "++";
+    symbol ")";
+    symbol "{";
+    p <- parseProgram;
+    symbol "}";
+    return (a ++ " while(" ++ b ++ ") {" ++ p ++ x ++ ":=" ++ x ++ "+1;}");
+}
+
+
 
 -- Extracts the GML code (it is "a" type) from tuple
 getCode :: [(Env, a, String)] -> a
@@ -768,14 +802,15 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <program> ::= <command> | <command> <program> "
                     putStrLn  ""
-                    putStrLn  " <command> ::= <assignment> | <ifThenElse> | <while> | skip';' "
+                    putStrLn  " <command> ::= <assignment> | <ifThenElse> | <while> | <forLoop> | skip';' "
                     putStrLn  ""
                     putStrLn  " <assignment> ::= <identifier> ':=' <aexp> ';' "
                     putStrLn  ""
                     putStrLn  " <ifThenElse> ::= 'if' '('<bexp>')' '{' <program> '}' |  'if' '('<bexp>')' '{' <program> '}' 'else' '{' <program> '}' "
                     putStrLn  ""
                     putStrLn  " <while> ::= 'while(' <bexp> ') {' <program> '}' "
-
+                    putStrLn  ""
+                    putStrLn  " <forLoop> ::= 'for(' <assignment> <bexp> ';' <identifier> '++) { ' <program> '}'"
                     putStrLn  ""
                     parser (xs)
             "help" ->
@@ -838,9 +873,12 @@ rcint = do
     putStrLn ""
     parser []
 
-main = do
-    -- rcint
-    --print(getMemory (parse program [] "a:=3;"))
-    --print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
-    --print(parse program [] "n := 3; i := 0;")
-    print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")
+main = do   
+    rcint
+    -- print(getMemory (parse program [] "a:=3;"))
+    -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
+    -- print(parse program [] "n := 3; i := 0;")
+    -- print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")
+    -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n OR 1==2) {fact := fact * (i+1); i := i+1;}")
+    -- print(parse program [] "a:=0; for(i:=2;i<=3;i++) {a:=a+1;}")
+

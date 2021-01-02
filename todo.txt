@@ -2,8 +2,10 @@ COSE FATTE:
 - Estendere l'interprete con la BNF modificata
 - Non funziona l'assegnazione b:=False; (viene parsarizzato ma non viene calcolato)
 - Non funziona il while con la condizione OR (i<n OR 3==9) 
+- Aggiungere il ciclo for
 
 COSE CHE RIMANGONO DA FARE:
 - Inserire la gestione dei tipi di dato (mai valorizzati, vedere quando viene chiamato updateEnv)
-- Aggiungere il ciclo for
 - Aggiungere la gestione degli array
+- Decidere se tenere il for così com'è oppure mettere istruzioni (for(i:=3;i<3;i:=i+2) piuttsto i++) 
+- Testare il forLoop (funziona ma forse fa un giro in meno)

@@ -475,13 +475,13 @@ assignment = (do
     symbol ":="
     v <- aexp
     symbol ";"
-    updateEnv Variable{name = x, vtype = "", value = v})
+    updateEnv Variable{name = x, vtype = "Integer", value = v})
     <|> (do
     x <- identifier
     symbol ":="
     v <- bexp
     symbol ";"
-    updateEnv Variable{name = x, vtype = "", value = (fromBoolToInt v)})
+    updateEnv Variable{name = x, vtype = "Boolean", value = (fromBoolToInt v)})
 
 parseAssignment :: Parser String
 parseAssignment = 
@@ -733,8 +733,8 @@ getMemory :: [(Env, a, String)] -> String
 getMemory [] = " Invalid input\n"
 getMemory [(x:xs, parsedString, "")] = case Main.getVarType x of
     "Boolean" -> case Main.getVarValue x of
-        1 -> "Boolean: " ++ (Main.getVarName x) ++ " = True\n" ++ (getMemory [(xs,parsedString,"")])
-        otherwise -> "Boolean: " ++ (Main.getVarName x) ++ " = False\n" ++ (getMemory [(xs,parsedString,"")])
+        1 -> " Boolean: " ++ (Main.getVarName x) ++ " = True\n" ++ (getMemory [(xs,parsedString,"")])
+        0 -> " Boolean: " ++ (Main.getVarName x) ++ " = False\n" ++ (getMemory [(xs,parsedString,"")])
     "Integer" -> " Integer: " ++ (Main.getVarName x) ++ " = " ++ (show (Main.getVarValue x)) ++ "\n" ++ (getMemory[(xs,parsedString,"")])
     "" -> "Emplty data type but we have following values: " ++ (Main.getVarName x) ++ " = " ++ (show (Main.getVarValue x)) ++ "\n" ++ (getMemory[(xs,parsedString,"")])
 
@@ -804,7 +804,7 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <command> ::= <assignment> | <ifThenElse> | <while> | <forLoop> | skip';' "
                     putStrLn  ""
-                    putStrLn  " <assignment> ::= <identifier> ':=' <aexp> ';' "
+                    putStrLn  " <assignment> ::= <identifier> ':=' <aexp> ';' | <identifier> ':=' <bexp> ';'"
                     putStrLn  ""
                     putStrLn  " <ifThenElse> ::= 'if' '('<bexp>')' '{' <program> '}' |  'if' '('<bexp>')' '{' <program> '}' 'else' '{' <program> '}' "
                     putStrLn  ""
@@ -840,7 +840,7 @@ parser xs =
                     case parse parseProgram [] line of
                         [] -> 
                             do
-                                putStrLn "Syntax error! Please read the syntax typing \":help\" "  
+                                putStrLn "Syntax error! Please read the syntax typing \"help\" "  
                                 parser xs
                         otherwise -> 
                             do

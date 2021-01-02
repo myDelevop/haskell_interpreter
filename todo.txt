@@ -6,6 +6,7 @@ COSE FATTE:
 - Aggiungere il ciclo for
 
 COSE CHE RIMANGONO DA FARE:
+- Aggiungere i Float
 - Aggiungere la gestione degli array
 - Decidere se tenere il for così com'è oppure mettere istruzioni (for(i:=3;i<3;i:=i+2) piuttsto i++) 
 - Testare il forLoop (funziona ma forse fa un giro in meno)

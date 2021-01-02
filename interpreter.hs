@@ -717,6 +717,7 @@ getCode [(_, x, _)]  =  x
 
 booleanType = "Boolean"
 integerType = "Integer"
+floatType  = "Float"
 
 getVarType :: Variable -> String
 getVarType = vtype
@@ -776,6 +777,8 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <integer> ::= [-] <nat> "
                     putStrLn  ""
+                    putStrLn  " <float> ::= <integer> | <integer> '.' <digit> <digit>"
+                    putStrLn  ""
                     putStrLn  " <identifier> ::= <lower> | <lower> <alphanum> "
                     putStrLn  ""
                     putStrLn  " <alphanum> ::= <upper> <alphanum> | <lower> <alphanum> | <nat> <alphanum> "
@@ -789,7 +792,7 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <aterm> ::= <afactor> '*' <aterm> | <afactor> '/' <aterm> | <afactor> "
                     putStrLn  ""
-                    putStrLn  " <afactor> ::= '('<aexp>')' | <integer> | <identifier> " 
+                    putStrLn  " <afactor> ::= '('<aexp>')' | <integer> | <float> | <identifier> " 
                     putStrLn  ""
                     putStrLn  " <bexp> ::= <bterm> 'OR' <bexp> | <bterm> "
                     putStrLn  ""
@@ -874,11 +877,12 @@ rcint = do
     parser []
 
 main = do   
-    rcint
+    --rcint
     -- print(getMemory (parse program [] "a:=3;"))
     -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
     -- print(parse program [] "n := 3; i := 0;")
     -- print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")
     -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n OR 1==2) {fact := fact * (i+1); i := i+1;}")
     -- print(parse program [] "a:=0; for(i:=2;i<=3;i++) {a:=a+1;}")
+    print(parse parseProgram [] "a:=3.44;")
 

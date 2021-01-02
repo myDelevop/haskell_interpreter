@@ -624,9 +624,117 @@ consumeBexp = do
     b <- parseBexp
     return b
 
-main = do 
-    print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
+--main = do 
+    --print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
     --print(parse program [] "i := 0; while i<10 {out:=0+i; i:=i+1;}")
 
---i = 10
---out = 9
+parser :: String -> IO String
+parser xs = 
+    do
+        putStr "RCInt#>"
+        hFlush stdout
+        line <- getLine
+
+        case line of
+            "printmem" ->
+                do
+                    putStrLn "TODO print memory"
+                    parser(xs)
+            "syntax" ->
+                do
+                    putStrLn  "-+-+ RCInt Syntax -+-+"
+                    putStrLn  ""
+                    putStrLn  " <digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 "
+                    putStrLn  ""
+                    putStrLn  " <nat> ::= <digit> <nat> | <digit> "
+                    putStrLn  ""
+                    putStrLn  " <integer> ::= [-] <nat> "
+                    putStrLn  ""
+                    putStrLn  " <identifier> ::= <lower> | <lower> <alphanum> "
+                    putStrLn  ""
+                    putStrLn  " <alphanum> ::= <upper> <alphanum> | <lower> <alphanum> | <nat> <alphanum> "
+                    putStrLn  "                <upper> | <lower> | <nat> "
+                    putStrLn  ""
+                    putStrLn  " <lower> ::= a-z "
+                    putStrLn  ""
+                    putStrLn  " <upper> ::= A-Z "
+                    putStrLn  ""
+                    putStrLn  "  <aexp> ::= <aterm> '+' <aexp> | <aterm> '-' <aexp> | <aterm> "
+                    putStrLn  ""
+                    putStrLn  "  <aterm> ::= <afactor> '*' <aterm> | <afactor> '/' <aterm> | <afactor> "
+                    putStrLn  ""
+                    putStrLn  "  <afactor> ::= '('<aexp>')' | <integer> | <identifier> " 
+                    putStrLn  ""
+                    putStrLn  "  <bexp> ::= <bterm> 'OR' <bexp> | <bterm> "
+                    putStrLn  ""
+                    putStrLn  "  <bterm> ::= <bfactor> 'AND' <bterm> | bfactor> "
+                    putStrLn  ""
+                    putStrLn  "  <bfactor> ::= 'True' | 'False' | '!'<bfactor> | '('<bexp>')' | <bcomparison> "
+                    putStrLn  ""
+                    putStrLn  "  <bcomparison> ::= <aexp> '==' <aexp> | <aexp> '<=' <aexp> | <aexp> '<' <aexp> | "
+                    putStrLn  "                    <aexp> '>=' <aexp> | <aexp> '>' <aexp> | <aexp> '!=' <aexp> "
+                    putStrLn  ""
+                    putStrLn  " <program> ::= <command> | <command> <program> "
+                    putStrLn  ""
+                    putStrLn  " <command> ::= <assignment> | <ifThenElse> | <while> | skip';' "
+                    putStrLn  ""
+                    putStrLn  " <assignment> ::= <identifier> ':=' <aexp> ';' "
+                    putStrLn  ""
+                    putStrLn  " <ifThenElse> ::= 'if' '('<bexp>')' '{' <program> '}' |  'if' '('<bexp>')' '{' <program> '}' 'else' '{' <program> '}' "
+                    putStrLn  ""
+                    putStrLn  " <while> ::= 'while(' <bexp> ') {' <program> '}' "
+
+                    putStrLn  ""
+                    parser (xs)
+            "help" ->
+                do
+                    putStrLn "TODO HELP"
+                    parser(xs)
+            "quit" ->
+                do
+                    return []
+            "exit" ->
+                do
+                    return []
+            "bye" ->
+                do
+                    return []
+            otherwise -> 
+                do
+                    case parse parseProgram [] line of
+                        [] -> 
+                            do
+                                putStrLn "Syntax error! Please read the MGL syntax typing \":help\" "  
+                                parser xs
+                        otherwise -> 
+                            do
+                                parser(xs ++ line)
+        return []
+
+
+rcint :: IO String
+rcint = do
+    putStrLn "  ──────────────────────────────────────────────────────────────────────────────────────  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██████╗░░█████╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██╔══██╗██╔══██╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██████╔╝██║░░╚═╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██╔══██╗██║░░██╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░██║░░██║╚█████╔╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░╚═╝░░╚═╝░╚════╝ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ██╗███╗░░██╗████████╗███████╗██████╗░██████╗░██████╗░███████╗████████╗███████╗██████╗   "
+    putStrLn "  ██║████╗░██║╚══██╔══╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗  "
+    putStrLn "  ██║██╔██╗██║░░░██║░░░█████╗░░██████╔╝██████╔╝██████╔╝█████╗░░░░░██║░░░█████╗░░██████╔╝  "
+    putStrLn "  ██║██║╚████║░░░██║░░░██╔══╝░░██╔══██╗██╔═══╝░██╔══██╗██╔══╝░░░░░██║░░░██╔══╝░░██╔══██╗  "
+    putStrLn "  ██║██║░╚███║░░░██║░░░███████╗██║░░██║██║░░░░░██║░░██║███████╗░░░██║░░░███████╗██║░░██║  "
+    putStrLn "  ╚═╝╚═╝░░╚══╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝╚═╝░░░░░╚═╝░░╚═╝╚══════╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝  "
+    putStrLn "  ──────────────────────────────────────────────────────────────────────────────────────  "
+    putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ Rocco Caliandro Interpreter ░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
+    putStrLn "  ──────────────────────────────────────────────────────────────────────────────────────  "
+    putStrLn ""
+    putStrLn "Type \":help\" for commands"
+    putStrLn ""
+    putStrLn ""
+    parser []
+
+main = rcint

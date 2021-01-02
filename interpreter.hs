@@ -386,7 +386,7 @@ parseBexp = do {
     p1 <- parseBexp2;
     symbol "OR";
     p2 <- parseBexp;
-    return (p1 ++ "OR" ++ p2);
+    return (p1 ++ " OR " ++ p2);
     } <|> do {
         p <- parseBexp2;
         return p;
@@ -398,7 +398,7 @@ parseBexp2 =
         p1 <- parseBexp3;
         symbol "AND";
         p2 <- parseBexp2;
-        return (p1 ++ "AND" ++ p2);
+        return (p1 ++ " AND " ++ p2);
     }
     <|>
     do {
@@ -613,7 +613,7 @@ parseIfThenElse = do {
     symbol "}";
     do {
         symbol "else";
-        symbol "}";
+        symbol "{";
         p2 <- parseProgram;
         symbol "}";
         return ("if(" ++ b ++ "){" ++ p1 ++ "}else{" ++ p2 ++ "}")
@@ -842,5 +842,5 @@ main = do
     -- rcint
     --print(getMemory (parse program [] "a:=3;"))
     --print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
-    print(parse program [] "b:=True;")
     --print(parse program [] "n := 3; i := 0;")
+    print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")

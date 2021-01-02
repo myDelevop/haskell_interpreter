@@ -669,19 +669,19 @@ parser xs =
             "printmem" ->
                 do
                     putStrLn  ""
-                    putStrLn  " -+-+ Parsed code -+-+ "
+                    putStrLn  " ***** Parsed code ***** "
                     if xs == [] then
                         putStrLn "111"
                     else 
                         putStrLn (getCode (parse parseProgram [] xs))
                     putStrLn ""
-                    putStrLn "-+-+ Memory -+-+"
+                    putStrLn "***** Memory *****"
                     putStrLn (getMemory (parse program [] xs))
                     putStrLn ""
                     parser(xs)
             "syntax" ->
                 do
-                    putStrLn  "-+-+ RCInt Syntax -+-+"
+                    putStrLn  "***** RCInt Syntax *****"
                     putStrLn  ""
                     putStrLn  " <digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 "
                     putStrLn  ""
@@ -727,8 +727,17 @@ parser xs =
                     parser (xs)
             "help" ->
                 do
-                    putStrLn "TODO HELP"
-                    parser(xs)
+                    putStrLn  "***** MGL Help *****"
+                    putStrLn  ""
+                    putStrLn  " printmem        => Print the parsed code and the status of the memory"
+                    putStrLn  ""
+                    putStrLn  " mglsyntax       => Show the BNF grammar for the RC-Interpreter"
+                    putStrLn  ""
+                    putStrLn  " help            => Print this help"
+                    putStrLn  ""
+                    putStrLn  " quit exit bye   => Stops RC-Interpreter"
+                    putStrLn  ""
+                    parser (xs)
             "quit" ->
                 do
                     return []
@@ -771,7 +780,7 @@ rcint = do
     putStrLn "  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ Rocco Caliandro Interpreter ░░░░░░░░░░░░░░░░░░░░░░░░░░░░  "
     putStrLn "  ──────────────────────────────────────────────────────────────────────────────────────  "
     putStrLn ""
-    putStrLn "Type \":help\" for commands"
+    putStrLn "Type \"help\" for more information"
     putStrLn ""
     putStrLn ""
     parser []

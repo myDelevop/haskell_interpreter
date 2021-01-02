@@ -213,6 +213,13 @@ aterm = do {
     return (t * f);
     }
     <|>
+    do {
+    f <- afactor;
+    symbol "/";
+    t <- aterm;
+    return (f `div` t);
+    }
+    <|>
     afactor
 
 parseAterm :: Parser String
@@ -250,7 +257,7 @@ parseFactor =
         e <- parseAexp;
         symbol ")";
         return ("(" ++ e ++ ")")
-    } <|> do {
+    } <|> do { -- possiamo togliere questo do???
         symbol "-";
         f <- parseFactor;
         return("-" ++ f);
@@ -266,26 +273,36 @@ parseFactor =
 parseCompareTo :: Parser String
 parseCompareTo = do {
     a1 <- parseAexp;
-    symbol "<";
+    symbol "==";
     a2 <- parseAexp;
-    return (a1 ++ "<" ++ a2);
-    }
-    <|> do {
+    return (a1 ++ "==" ++ a2);
+    } <|> do {
+        a1 <- parseAexp;
+        symbol "<=";
+        a2 <- parseAexp;
+        return (a1 ++ "<=" ++ a2);
+    } <|> do {
+        a1 <- parseAexp;
+        symbol "<";
+        a2 <- parseAexp;
+        return (a1 ++ "<" ++ a2);
+    } <|> do {
+        a1 <- parseAexp;
+        symbol ">=";
+        a2 <- parseAexp;
+        return (a1 ++ ">=" ++ a2);
+    } <|> do {
         a1 <- parseAexp;
         symbol ">";
         a2 <- parseAexp;
         return (a1 ++ ">" ++ a2);
     } <|> do {
         a1 <- parseAexp;
-        symbol "==";
-        a2 <- parseAexp;
-        return (a1 ++ "==" ++ a2);
-    } <|> do {
-        a1 <- parseAexp;
         symbol "!=";
         a2 <- parseAexp;
         return (a1 ++ "!=" ++ a2);
-    }
+    } 
+
 
 bexp :: Parser Bool
 bexp = (do
@@ -330,22 +347,46 @@ bfactor = (do
 bcomparison :: Parser Bool
 bcomparison = (do 
     a0 <- aexp
-    symbol "="
+    symbol "=="
     a1 <- aexp
     return (a0 == a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol "<="
+        a1 <- aexp
+        return (a0 <= a1))
     <|>
     (do 
         a0 <- aexp
         symbol "<"
         a1 <- aexp
         return (a0 < a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol ">="
+        a1 <- aexp
+        return (a0 >= a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol ">"
+        a1 <- aexp
+        return (a0 > a1))
+    <|>
+    (do 
+        a0 <- aexp
+        symbol "!="
+        a1 <- aexp
+        return (a0 /= a1))
 
 parseBexp :: Parser String
 parseBexp = do {
     p1 <- parseBexp2;
-    symbol "||";
+    symbol "OR";
     p2 <- parseBexp;
-    return (p1 ++ "||" ++ p2);
+    return (p1 ++ "OR" ++ p2);
     } <|> do {
         p <- parseBexp2;
         return p;
@@ -355,9 +396,9 @@ parseBexp2 :: Parser String
 parseBexp2 = 
     do {
         p1 <- parseBexp3;
-        symbol "&&";
+        symbol "AND";
         p2 <- parseBexp2;
-        return (p1 ++ "&&" ++ p2);
+        return (p1 ++ "AND" ++ p2);
     }
     <|>
     do {
@@ -574,7 +615,9 @@ while = do
     w <- consumeWhile
     repeatWhile w
     symbol "while"
+    symbol "("
     b <- bexp
+    symbol ")"
     symbol "{"
    
     if (b) then (
@@ -592,13 +635,13 @@ while = do
 parseWhile :: Parser String
 parseWhile = do {
     symbol "while";
-    --symbol "(";
+    symbol "(";
     b <- parseBexp;
-    --symbol ")";
+    symbol ")";
     symbol "{";
     p <- parseProgram;
     symbol "}";
-    return ("while" ++ b ++ "{" ++ p ++ "}");
+    return ("while(" ++ b ++ "){" ++ p ++ "}");
 }
 
 repeatWhile :: String -> Parser String
@@ -608,11 +651,13 @@ repeatWhile c = P(\env input -> [(env, "", c ++ input)])
 consumeWhile :: Parser String
 consumeWhile = do 
     symbol "while";
+    symbol "(";
     b <- consumeBexp
+    symbol ")";
     symbol "{";
     p <- parseProgram
     symbol "}"
-    return ("while " ++ b ++ " {" ++ p ++ "}")
+    return ("while(" ++ b ++ "){" ++ p ++ "}")
 
 consumeBexp :: Parser String
 consumeBexp = do
@@ -701,7 +746,7 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <bexp> ::= <bterm> 'OR' <bexp> | <bterm> "
                     putStrLn  ""
-                    putStrLn  " <bterm> ::= <bfactor> 'AND' <bterm> | bfactor> "
+                    putStrLn  " <bterm> ::= <bfactor> 'AND' <bterm> | <bfactor> "
                     putStrLn  ""
                     putStrLn  " <bfactor> ::= 'True' | 'False' | '!'<bfactor> | '('<bexp>')' | <bcomparison> "
                     putStrLn  ""
@@ -781,7 +826,8 @@ rcint = do
     parser []
 
 main = do
-    rcint
+    -- rcint
     --print(getMemory (parse program [] "a:=3;"))
-    --print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
-    --print(parse program [] "b:=False;")
+    --print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
+    print(parse parseProgram [] "b:=False;")
+    --print(parse program [] "n := 3; i := 0;")

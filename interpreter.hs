@@ -462,13 +462,26 @@ parseBexp3 =
         return ("!" ++ p)
     }
 
+
+
+fromBoolToInt :: Bool -> Int
+fromBoolToInt True = 1
+fromBoolToInt False = 0
+
+
 assignment :: Parser String
-assignment = do 
+assignment = (do 
     x <- identifier
     symbol ":="
     v <- aexp
     symbol ";"
-    updateEnv Variable{name = x, vtype = "", value = v}
+    updateEnv Variable{name = x, vtype = "", value = v})
+    <|> (do
+    x <- identifier
+    symbol ":="
+    v <- bexp
+    symbol ";"
+    updateEnv Variable{name = x, vtype = "", value = (fromBoolToInt v)})
 
 parseAssignment :: Parser String
 parseAssignment = 
@@ -829,5 +842,5 @@ main = do
     -- rcint
     --print(getMemory (parse program [] "a:=3;"))
     --print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
-    print(parse parseProgram [] "b:=False;")
+    print(parse program [] "b:=True;")
     --print(parse program [] "n := 3; i := 0;")

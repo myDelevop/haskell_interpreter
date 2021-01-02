@@ -676,7 +676,7 @@ parser xs =
                     parser(xs)
             "syntax" ->
                 do
-                    putStrLn  "***** RCInt Syntax *****"
+                    putStrLn  "***** RC Interpreter - Syntax *****"
                     putStrLn  ""
                     putStrLn  " <digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 "
                     putStrLn  ""
@@ -693,20 +693,20 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <upper> ::= A-Z "
                     putStrLn  ""
-                    putStrLn  "  <aexp> ::= <aterm> '+' <aexp> | <aterm> '-' <aexp> | <aterm> "
+                    putStrLn  " <aexp> ::= <aterm> '+' <aexp> | <aterm> '-' <aexp> | <aterm> "
                     putStrLn  ""
-                    putStrLn  "  <aterm> ::= <afactor> '*' <aterm> | <afactor> '/' <aterm> | <afactor> "
+                    putStrLn  " <aterm> ::= <afactor> '*' <aterm> | <afactor> '/' <aterm> | <afactor> "
                     putStrLn  ""
-                    putStrLn  "  <afactor> ::= '('<aexp>')' | <integer> | <identifier> " 
+                    putStrLn  " <afactor> ::= '('<aexp>')' | <integer> | <identifier> " 
                     putStrLn  ""
-                    putStrLn  "  <bexp> ::= <bterm> 'OR' <bexp> | <bterm> "
+                    putStrLn  " <bexp> ::= <bterm> 'OR' <bexp> | <bterm> "
                     putStrLn  ""
-                    putStrLn  "  <bterm> ::= <bfactor> 'AND' <bterm> | bfactor> "
+                    putStrLn  " <bterm> ::= <bfactor> 'AND' <bterm> | bfactor> "
                     putStrLn  ""
-                    putStrLn  "  <bfactor> ::= 'True' | 'False' | '!'<bfactor> | '('<bexp>')' | <bcomparison> "
+                    putStrLn  " <bfactor> ::= 'True' | 'False' | '!'<bfactor> | '('<bexp>')' | <bcomparison> "
                     putStrLn  ""
-                    putStrLn  "  <bcomparison> ::= <aexp> '==' <aexp> | <aexp> '<=' <aexp> | <aexp> '<' <aexp> | "
-                    putStrLn  "                    <aexp> '>=' <aexp> | <aexp> '>' <aexp> | <aexp> '!=' <aexp> "
+                    putStrLn  " <bcomparison> ::= <aexp> '==' <aexp> | <aexp> '<=' <aexp> | <aexp> '<' <aexp> | "
+                    putStrLn  "                   <aexp> '>=' <aexp> | <aexp> '>' <aexp> | <aexp> '!=' <aexp> "
                     putStrLn  ""
                     putStrLn  " <program> ::= <command> | <command> <program> "
                     putStrLn  ""
@@ -722,11 +722,11 @@ parser xs =
                     parser (xs)
             "help" ->
                 do
-                    putStrLn  "***** MGL Help *****"
+                    putStrLn  "***** RC-Interpreter Help *****"
                     putStrLn  ""
                     putStrLn  " printmem        => Print the parsed code and the status of the memory"
                     putStrLn  ""
-                    putStrLn  " mglsyntax       => Show the BNF grammar for the RC-Interpreter"
+                    putStrLn  " syntax       => Show the BNF grammar for the RC-Interpreter"
                     putStrLn  ""
                     putStrLn  " help            => Print this help"
                     putStrLn  ""
@@ -747,7 +747,7 @@ parser xs =
                     case parse parseProgram [] line of
                         [] -> 
                             do
-                                putStrLn "Syntax error! Please read the MGL syntax typing \":help\" "  
+                                putStrLn "Syntax error! Please read the syntax typing \":help\" "  
                                 parser xs
                         otherwise -> 
                             do
@@ -781,7 +781,7 @@ rcint = do
     parser []
 
 main = do
-    --print(getMemory (parse program [] "a:=3;"))
     rcint
+    --print(getMemory (parse program [] "a:=3;"))
     --print(parse parseProgram [] "n := 3; i := 0; fact := 1; while i<n {fact := fact * (i+1); i :=  i+1;}")
     --print(parse program [] "b:=False;")

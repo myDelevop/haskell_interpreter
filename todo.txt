@@ -7,7 +7,12 @@ COSE FATTE:
 - Decidere se tenere il for così com'è oppure mettere istruzioni (for(i:=3;i<3;i:=i+2) piuttsto i++) (messe ++, -- e assignment )
 
 COSE CHE RIMANGONO DA FARE:
-- Aggiungere i Float
+- Aggiungere i Float (aggiungere i seguenti nella BNF):
+    putStrLn  " <float> ::= <integer> | <integer> '.' <digit> <digit>"
+    putStrLn  ""
+    putStrLn  " <afactor> ::= '('<aexp>')' | <integer> | <float> | <identifier> " 
+    putStrLn  ""
+    
 - Aggiungere la gestione degli array
 - Testare il forLoop (funziona ma forse fa un giro in meno)
 - Il seguente programma non funziona (assegnazione di Bool in variabili): bool:=False;x:=3;if(bool){x:=44;}else{x:=55;} 

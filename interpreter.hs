@@ -838,9 +838,9 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <while> ::= 'while(' <bexp> ') {' <program> '}' "
                     putStrLn  ""
-                    putStrLn  " <forLoop> ::= 'for(' <assignment> <bexp> ';' <identifier> '++) { ' <program> '}' | 
-                                              'for(' <assignment> <bexp> ';' <identifier> '--) { ' <program> '}' |
-                                              'for(' <assignment> <bexp> ';' <assignment> ') { ' <program> '}'" 
+                    putStrLn  " <forLoop> ::= 'for(' <assignment> <bexp> ';' <identifier> '++) { ' <program> '}' |"
+                    putStrLn  "               'for(' <assignment> <bexp> ';' <identifier> '--) { ' <program> '}' |"
+                    putStrLn  "               'for(' <assignment> <bexp> ';' <assignment> ')   { ' <program> '}' " 
                     putStrLn  ""
                     parser (xs)
             "help" ->
@@ -904,13 +904,13 @@ rcint = do
     parser []
 
 main = do   
-    --rcint
+    rcint
     -- print(getMemory (parse program [] "a:=3;"))
     -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n) {fact := fact * (i+1); i := i+1;}")
     -- print(parse program [] "n := 3; i := 0;")
     -- print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")
     -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n OR 1==2) {fact := fact * (i+1); i := i+1;}")
     -- print(parse program [] "a:=0; for(i:=2;i<=3;i++) {a:=a+1;}")
-    --print(parse parseProgram [] "a:=3.44;")
-    print(parse parseProgram [] "for (i:=0; i<9; i:=i-1;)  {a:=a+1;}")
-
+    -- print(parse parseProgram [] "a:=3.44;")
+    -- print(parse parseProgram [] "for (i:=0; i<9; i:=i-1;)  {a:=a+1;}")
+    -- print(parse program [] "n:=0; for(i:=0; i<10; i++) { n := n+1; }")

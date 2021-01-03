@@ -4,9 +4,9 @@ COSE FATTE:
 - Non funziona l'assegnazione b:=False; (viene parsarizzato ma non viene calcolato)
 - Non funziona il while con la condizione OR (i<n OR 3==9) 
 - Aggiungere il ciclo for
+- Decidere se tenere il for così com'è oppure mettere istruzioni (for(i:=3;i<3;i:=i+2) piuttsto i++) (messe ++, -- e assignment )
 
 COSE CHE RIMANGONO DA FARE:
 - Aggiungere i Float
 - Aggiungere la gestione degli array
-- Decidere se tenere il for così com'è oppure mettere istruzioni (for(i:=3;i<3;i:=i+2) piuttsto i++) 
 - Testare il forLoop (funziona ma forse fa un giro in meno)

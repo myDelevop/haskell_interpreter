@@ -10,3 +10,5 @@ COSE CHE RIMANGONO DA FARE:
 - Aggiungere i Float
 - Aggiungere la gestione degli array
 - Testare il forLoop (funziona ma forse fa un giro in meno)
+- Il seguente programma non funziona (assegnazione di Bool in variabili): bool:=False;x:=3;if(bool){x:=44;}else{x:=55;} 
+- Il seguente programma non funziona (skip): skip;

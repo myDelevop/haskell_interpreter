@@ -707,6 +707,31 @@ parseForLoop = do {
     p <- parseProgram;
     symbol "}";
     return (a ++ " while(" ++ b ++ ") {" ++ p ++ x ++ ":=" ++ x ++ "+1;}");
+} <|> do {
+    symbol "for";
+    symbol "(";
+    a <- parseAssignment;
+    b <- parseBexp;
+    symbol ";";
+    x <- identifier;
+    symbol "--";
+    symbol ")";
+    symbol "{";
+    p <- parseProgram;
+    symbol "}";
+    return (a ++ " while(" ++ b ++ ") {" ++ p ++ x ++ ":=" ++ x ++ "-1;}");
+} <|> do {
+    symbol "for";
+    symbol "(";
+    a <- parseAssignment;
+    b <- parseBexp;
+    symbol ";";
+    c <- parseAssignment;
+    symbol ")";
+    symbol "{";
+    p <- parseProgram;
+    symbol "}";
+    return (a ++ " while(" ++ b ++ ") {" ++ p ++ c ++ "}");
 }
 
 
@@ -813,7 +838,9 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <while> ::= 'while(' <bexp> ') {' <program> '}' "
                     putStrLn  ""
-                    putStrLn  " <forLoop> ::= 'for(' <assignment> <bexp> ';' <identifier> '++) { ' <program> '}'"
+                    putStrLn  " <forLoop> ::= 'for(' <assignment> <bexp> ';' <identifier> '++) { ' <program> '}' | 
+                                              'for(' <assignment> <bexp> ';' <identifier> '--) { ' <program> '}' |
+                                              'for(' <assignment> <bexp> ';' <assignment> ') { ' <program> '}'" 
                     putStrLn  ""
                     parser (xs)
             "help" ->
@@ -884,5 +911,6 @@ main = do
     -- print(parse parseProgram [] "if(1==2 OR 1==2) {a:=1;} else {a:=0;}")
     -- print(parse program [] "n := 3; i := 0; fact := 1; while (i<n OR 1==2) {fact := fact * (i+1); i := i+1;}")
     -- print(parse program [] "a:=0; for(i:=2;i<=3;i++) {a:=a+1;}")
-    print(parse parseProgram [] "a:=3.44;")
+    --print(parse parseProgram [] "a:=3.44;")
+    print(parse parseProgram [] "for (i:=0; i<9; i:=i-1;)  {a:=a+1;}")
 

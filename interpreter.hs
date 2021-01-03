@@ -466,7 +466,7 @@ parseBexp3 =
 
 fromBoolToInt :: Bool -> Int
 fromBoolToInt True = 1
-fromBoolToInt False = 0
+fromBoolToInt _ = 0
 
 
 assignment :: Parser String
@@ -759,7 +759,7 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " ***** Parsed code ***** "
                     if xs == [] then
-                        putStrLn "111"
+                        putStrLn ""
                     else 
                         putStrLn (getCode (parse parseProgram [] xs))
                     putStrLn ""

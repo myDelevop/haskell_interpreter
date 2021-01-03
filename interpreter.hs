@@ -843,13 +843,34 @@ parser xs =
                     putStrLn  "               'for(' <assignment> <bexp> ';' <assignment> ')   { ' <program> '}' " 
                     putStrLn  ""
                     parser (xs)
+            "examples" ->
+                do
+                    putStrLn  "***** RC-Interpreter Program examples *****"
+                    putStrLn  " Assignment :"
+                    putStrLn  " bool := False; num := 7;"
+                    putStrLn  ""
+                    putStrLn  " ifThenElse :"
+                    putStrLn  " x := 3; y := 4; if (x <= 4) { x := 76; } else { x := 88; }"
+                    putStrLn  ""
+                    putStrLn  " while :"
+                    putStrLn  " n := 0; i := 0; while (i < 10) {n := n + 1; i := i + 1;}"
+                    putStrLn  ""
+                    putStrLn  " for loop :"
+                    putStrLn  " a:=0; for (i:=10; i>0; i--)  {a:=a+1;}"
+                    putStrLn  ""
+                    putStrLn  " Factorial of 3: "
+                    putStrLn  " n := 3; i := 0; fact := 1; while (i < n) {fact := fact * (i+1); i := i+1;}"
+                    putStrLn  ""
+                    parser (xs)
             "help" ->
                 do
                     putStrLn  "***** RC-Interpreter Help *****"
                     putStrLn  ""
                     putStrLn  " printmem        => Print the parsed code and the status of the memory"
                     putStrLn  ""
-                    putStrLn  " syntax       => Show the BNF grammar for the RC-Interpreter"
+                    putStrLn  " syntax          => Show the BNF grammar for the RC-Interpreter"
+                    putStrLn  ""
+                    putStrLn  " examples        => Examples of programs written in the grammar of the RC-Interpreter"
                     putStrLn  ""
                     putStrLn  " help            => Print this help"
                     putStrLn  ""
@@ -913,4 +934,4 @@ main = do
     -- print(parse program [] "a:=0; for(i:=2;i<=3;i++) {a:=a+1;}")
     -- print(parse parseProgram [] "a:=3.44;")
     -- print(parse parseProgram [] "for (i:=0; i<9; i:=i-1;)  {a:=a+1;}")
-    -- print(parse program [] "n:=0; for(i:=0; i<10; i++) { n := n+1; }")
+    -- print(parse program [] "n:=0; for(i:=0; i<=9; i:=i+1;) { n := n+1; }")

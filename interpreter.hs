@@ -804,7 +804,7 @@ parser xs =
                     putStrLn  ""
                     putStrLn  " <identifier> ::= <lower> | <lower> <alphanum> "
                     putStrLn  ""
-                    putStrLn  " <alphanum> ::= <upper> <alphanum> | <lower> <alphanum> | <nat> <alphanum> "
+                    putStrLn  " <alphanum> ::= <upper> <alphanum> | <lower> <alphanum> | <nat> <alphanum> |"
                     putStrLn  "                <upper> | <lower> | <nat> "
                     putStrLn  ""
                     putStrLn  " <lower> ::= a-z "
